@@ -27,6 +27,9 @@ public class ProdottoDAOImp implements ProdottoDAO {
 
     @Override
     public synchronized void doSave(Prodotto prodotto) throws SQLException {
+        if (prodotto.getPrezzo() < 0) {
+        throw new IllegalArgumentException("Il prezzo non può essere negativo.");
+    }
         Connection connection = null;
         PreparedStatement preparedStatement = null;
         String insertSQL = "INSERT INTO prodotto (nome, descrizione, prezzo, quantita, categoria_id, specifiche) VALUES (?, ?, ?, ?, ?, ?)";
@@ -43,7 +46,7 @@ public class ProdottoDAOImp implements ProdottoDAO {
             preparedStatement.setString(6, prodotto.getSpecifiche());
             //preparedStatement.setString(7, prodotto.getFoto());
             preparedStatement.executeUpdate();
-        } catch (ClassNotFoundException e) {
+        } catch (ClassNotFoundException e ) {
             throw new RuntimeException(e);
         } finally {
             if (preparedStatement != null) preparedStatement.close();
