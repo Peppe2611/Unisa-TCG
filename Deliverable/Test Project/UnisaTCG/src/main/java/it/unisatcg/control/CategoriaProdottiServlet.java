@@ -15,6 +15,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 @WebServlet("/visualizza-prodotti")
@@ -25,29 +26,45 @@ public class CategoriaProdottiServlet extends HttpServlet {
         ProdottoDAO prodottoDAO = new ProdottoDAOImp();
         CategoriaDAO categoriaDAO = new CategoriaDAOImp();
 
-        List<Prodotto> products;
+        List<Prodotto> products = List.of();
         List<Categoria> categorie;
+
+        List<String> disponibilita = new ArrayList<>(List.of());
+        disponibilita.add("Tutto");
+        disponibilita.add("Disponibile");
+        disponibilita.add("Esaurito");
+
         int categoriaSelezionataId = -1;
+        // Recupero parametri
         String categoriaIdStr = request.getParameter("categoriaId");
+        String disponibilitasel = request.getParameter("disponibilita");
+
+        // Valore di default se il parametro è assente
+        if (disponibilitasel == null || disponibilitasel.isEmpty()) {
+            disponibilitasel = "Tutto";
+        }
 
         try {
             categorie = categoriaDAO.doRetrieveAll();
 
             if (categoriaIdStr != null && !categoriaIdStr.trim().isEmpty()) {
                 int categoriaId = Integer.parseInt(categoriaIdStr);
-                products = prodottoDAO.doRetrieveByCategoria(categoriaId);
+                products = prodottoDAO.doRetrieveByCategoriaDisp(categoriaId, disponibilitasel);
                 categoriaSelezionataId = categoriaId;
             } else {
-                products = prodottoDAO.doRetrieveAll();
+                // Filtra tutti i prodotti in base alla disponibilità
+                products = prodottoDAO.doRetrieveAllDisp(disponibilitasel);
             }
         } catch (SQLException | NumberFormatException e) {
             e.printStackTrace();
-            throw new ServletException("Errore durante il recupero dei dati dal database.", e);
+            throw new ServletException("Errore database", e);
         }
 
+        // Passaggio attributi alla JSP
         request.setAttribute("products", products);
         request.setAttribute("categorie", categorie);
         request.setAttribute("categoriaSelezionata", categoriaSelezionataId);
+        request.setAttribute("disponibilitasel", disponibilitasel); // Essenziale per la JSP
 
         RequestDispatcher dispatcher = request.getRequestDispatcher("/products.jsp");
         dispatcher.forward(request, response);

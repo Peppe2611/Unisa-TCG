@@ -2,7 +2,6 @@
 <%@ page import="it.unisatcg.model.Categoria" %>
 <%@ page import="java.util.List" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
 <!DOCTYPE html>
 <html lang="it">
 <head>
@@ -13,26 +12,30 @@
 <main class="container">
   <h2 class="page-title">Tutti i Prodotti</h2>
   <div class="filter-container" style="margin-bottom: 30px; text-align: center;">
-    <form action="visualizza-prodotti" method="get" id="category-filter-form">
-      <label for="category-select" style="font-weight: bold; margin-right: 10px;">Filtra per Categoria:</label>
-      <select name="categoriaId" id="category-select" style="padding: 8px; border-radius: 5px;">
+    <form action="visualizza-prodotti" method="get" id="filter-form">
+      <label for="category-select" style="font-weight: bold; margin-right: 10px;">Categoria:</label>
+      <select name="categoriaId" id="category-select" onchange="this.form.submit()" style="padding: 8px; border-radius: 5px;">
         <option value="">Tutte le Categorie</option>
         <%
-          @SuppressWarnings("unchecked")
           List<Categoria> categorie = (List<Categoria>) request.getAttribute("categorie");
-          Integer categoriaSelezionataId = (Integer) request.getAttribute("categoriaSelezionata");
-          if (categorie != null) {
-            for (Categoria cat : categorie) {
-              String selected = "";
-              if (categoriaSelezionataId != null && cat.getId() == categoriaSelezionataId) {
-                selected = "selected";
-              }
+          Integer selectedCat = (Integer) request.getAttribute("categoriaSelezionata");
+          for (Categoria cat : categorie) {
         %>
-        <option value="<%= cat.getId() %>" <%= selected %>><%= cat.getNome() %></option>
+        <option value="<%= cat.getId() %>" <%= (selectedCat != null && selectedCat == cat.getId()) ? "selected" : "" %>>
+          <%= cat.getNome() %>
+        </option>
+        <% } %>
+      </select>
+
+      <label for="disp-select" style="font-weight: bold; margin-right: 10px;">Disponibilità:</label>
+      <select name="disponibilita" id="disp-select" onchange="this.form.submit()" style="padding: 8px; border-radius: 5px;">
         <%
-            }
-          }
+          String currentDisp = (String) request.getAttribute("disponibilitasel");
+          String[] options = {"Tutto", "Disponibile", "Esaurito"};
+          for (String opt : options) {
         %>
+        <option value="<%= opt %>" <%= opt.equals(currentDisp) ? "selected" : "" %>><%= opt %></option>
+        <% } %>
       </select>
     </form>
   </div>
@@ -43,7 +46,7 @@
 
     if (products == null || products.isEmpty()) {
   %>
-  <p style="text-align: center;">Nessun prodotto disponibile al momento.</p>
+  <p style="text-align: center;">Nessun prodotto trovato...</p>
   <%
   } else {
   %>

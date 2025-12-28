@@ -27,9 +27,6 @@ public class ProdottoDAOImp implements ProdottoDAO {
 
     @Override
     public synchronized void doSave(Prodotto prodotto) throws SQLException {
-        if (prodotto.getPrezzo() < 0) {
-        throw new IllegalArgumentException("Il prezzo non può essere negativo.");
-    }
         Connection connection = null;
         PreparedStatement preparedStatement = null;
         String insertSQL = "INSERT INTO prodotto (nome, descrizione, prezzo, quantita, categoria_id, specifiche) VALUES (?, ?, ?, ?, ?, ?)";
@@ -46,7 +43,7 @@ public class ProdottoDAOImp implements ProdottoDAO {
             preparedStatement.setString(6, prodotto.getSpecifiche());
             //preparedStatement.setString(7, prodotto.getFoto());
             preparedStatement.executeUpdate();
-        } catch (ClassNotFoundException e ) {
+        } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         } finally {
             if (preparedStatement != null) preparedStatement.close();
@@ -193,6 +190,63 @@ public class ProdottoDAOImp implements ProdottoDAO {
             if (rs != null) rs.close();
             if (preparedStatement != null) preparedStatement.close();
             if (connection != null) connection.close();
+        }
+        return prodotti;
+    }
+
+    @Override
+    public List<Prodotto> doRetrieveByCategoriaDisp(int categoriaId, String disp) throws SQLException {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet rs = null;
+        List<Prodotto> prodotti = new ArrayList<>();
+        String selectSQL = "";
+        if(disp.equals("Tutto")){
+            selectSQL = "SELECT * FROM prodotto WHERE categoria_id = ?";
+        }
+        if(disp.equals("Disponibile")){
+            selectSQL = "SELECT * FROM prodotto WHERE categoria_id = ? AND quantita > 0";
+        }
+        if(disp.equals("Esaurito")){
+            selectSQL = "SELECT * FROM prodotto WHERE categoria_id = ? AND quantita = 0";
+        }
+
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+            preparedStatement = connection.prepareStatement(selectSQL);
+            preparedStatement.setInt(1, categoriaId);
+            rs = preparedStatement.executeQuery();
+            while (rs.next()) {
+                prodotti.add(extractProdottoFromResultSet(rs));
+            }
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        } finally {
+            if (rs != null) rs.close();
+            if (preparedStatement != null) preparedStatement.close();
+            if (connection != null) connection.close();
+        }
+        return prodotti;
+    }
+
+    @Override
+    public List<Prodotto> doRetrieveAllDisp(String disp) throws SQLException {
+        List<Prodotto> prodotti = new ArrayList<>();
+        String selectSQL = "SELECT * FROM prodotto";
+
+        if ("Disponibile".equals(disp)) {
+            selectSQL += " WHERE quantita > 0";
+        } else if ("Esaurito".equals(disp)) {
+            selectSQL += " WHERE quantita = 0";
+        }
+
+        try (Connection connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+             PreparedStatement preparedStatement = connection.prepareStatement(selectSQL);
+             ResultSet rs = preparedStatement.executeQuery()) {
+            while (rs.next()) {
+                prodotti.add(extractProdottoFromResultSet(rs));
+            }
         }
         return prodotti;
     }
