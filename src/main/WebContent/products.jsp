@@ -5,12 +5,24 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <title>Tutti i Prodotti - UnisaTCG</title>
+  <title>Prodotti - UnisaTCG</title>
 </head>
 <body>
 <%@include file="common/header.jspf"%>
 <main class="container">
+
+  <%-- LOGICA PER IL TITOLO DINAMICO --%>
+  <%
+    String searchQuery = (String) request.getAttribute("searchQuery");
+    if (searchQuery != null && !searchQuery.trim().isEmpty()) {
+  %>
+  <h2 class="page-title">Risultati ricerca per: "<span style="color: #f39c12;"><%= searchQuery %></span>"</h2>
+  <div style="text-align:center; margin-bottom: 20px;">
+    <a href="visualizza-prodotti" style="text-decoration: underline; color: #333;">Mostra tutti i prodotti</a>
+  </div>
+  <% } else { %>
   <h2 class="page-title">Tutti i Prodotti</h2>
+  <% } %>
 
   <%-- Filtri Categoria --%>
   <div class="filter-container" style="margin-bottom: 30px; text-align: center;">
@@ -37,7 +49,12 @@
       List<Prodotto> products = (List<Prodotto>) request.getAttribute("products");
       if (products == null || products.isEmpty()) {
     %>
-    <p style="text-align: center;">Nessun prodotto trovato.</p>
+    <div style="width: 100%; text-align: center; margin-top: 20px;">
+      <p>Nessun prodotto trovato.</p>
+      <% if (searchQuery != null) { %>
+      <p>Prova a cercare con parole diverse o <a href="visualizza-prodotti">torna al catalogo completo</a>.</p>
+      <% } %>
+    </div>
     <% } else {
       for (Prodotto prodotto : products) { %>
     <div class="product-card">
@@ -48,7 +65,6 @@
       <p class="price">€ <%= String.format("%.2f", prodotto.getPrezzo()) %></p>
 
       <% if (prodotto.getQuantita() > 0) { %>
-      <%-- FIX: Action verso la servlet centralizzata con parametro 'azione' --%>
       <form action="gestione-carrello" method="post">
         <input type="hidden" name="azione" value="aggiungi">
         <input type="hidden" name="prodottoId" value="<%= prodotto.getId() %>">
@@ -56,7 +72,7 @@
         <button type="submit" class="btn btn-primary">Aggiungi al Carrello</button>
       </form>
       <% } else { %>
-      <button type="button" class="btn btn-primary" disabled style="background-color: grey;">Esaurito</button>
+      <p class="out-of-stock" style="color: red; font-weight: bold;">Esaurito</p>
       <% } %>
     </div>
     <% } } %>

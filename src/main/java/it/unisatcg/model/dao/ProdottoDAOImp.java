@@ -52,6 +52,27 @@ public class ProdottoDAOImp implements ProdottoDAO {
     }
 
     @Override
+    public List<Prodotto> doRetrieveByNome(String search) throws SQLException {
+        List<Prodotto> prodotti = new ArrayList<>();
+        String selectSQL = "SELECT * FROM prodotto WHERE nome LIKE ? OR descrizione LIKE ?";
+
+        try (Connection connection = DBConnection.getConnection();
+             PreparedStatement ps = connection.prepareStatement(selectSQL)) {
+
+            String searchString = "%" + search + "%";
+            ps.setString(1, searchString);
+            ps.setString(2, searchString);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    prodotti.add(extractProdottoFromResultSet(rs));
+                }
+            }
+        }
+        return prodotti;
+    }
+
+    @Override
     public List<Prodotto> doRetrieveAll() throws SQLException {
         List<Prodotto> prodotti = new ArrayList<>();
         String selectSQL = "SELECT * FROM prodotto";

@@ -13,6 +13,7 @@ public interface ProdottoDAO {
     List<Prodotto> doRetrieveAllDisp(String disp) throws SQLException;
     Prodotto doRetrieveByKey(int id) throws SQLException;
     List<Prodotto> doRetrieveAll() throws SQLException;
+    List<Prodotto> doRetrieveByNome(String search) throws SQLException;
     void doUpdate(Prodotto prodotto) throws SQLException;
     void doUpdateQuantita(int prodottoId, int quantitaDaSottrarre, Connection con) throws SQLException;
     void doDelete(int id) throws SQLException;
