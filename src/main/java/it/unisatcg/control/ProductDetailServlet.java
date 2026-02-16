@@ -1,8 +1,11 @@
 package it.unisatcg.control;
 
 import it.unisatcg.model.Prodotto;
+import it.unisatcg.model.Recensione;
 import it.unisatcg.model.dao.ProdottoDAO;
 import it.unisatcg.model.dao.ProdottoDAOImp;
+import it.unisatcg.model.dao.RecensioneDAO;
+import it.unisatcg.model.dao.RecensioneDAOImp;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -12,6 +15,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.List;
 
 @WebServlet("/dettaglio-prodotto")
 public class ProductDetailServlet extends HttpServlet {
@@ -34,6 +38,13 @@ public class ProductDetailServlet extends HttpServlet {
             }
 
             request.setAttribute("prodotto", prodotto);
+
+
+            it.unisatcg.model.dao.RecensioneDAO recensioneDAO = new it.unisatcg.model.dao.RecensioneDAOImp();
+            java.util.List<it.unisatcg.model.Recensione> recensioni = recensioneDAO.doRetrieveByProdotto(prodottoId);
+            request.setAttribute("recensioni", recensioni);
+            // -----------------------------
+
             RequestDispatcher dispatcher = request.getRequestDispatcher("/product_detail.jsp");
             dispatcher.forward(request, response);
 
