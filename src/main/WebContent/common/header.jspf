@@ -7,13 +7,106 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/styles/style.css">
     <link href="scripts/main.js" type="text/javascript">
+
+    <%-- STILE AGGIUNTIVO PER LA BARRA DI RICERCA CENTRALE --%>
+    <style>
+        /* Container principale dell'header */
+        .main-header .container {
+            display: flex;
+            justify-content: space-between; /* Distribuisce Logo - Cerca - Menu */
+            align-items: center;
+            gap: 20px; /* Spazio tra gli elementi */
+            position: relative;
+        }
+
+        /* LOGO */
+        .logo-group {
+            flex-shrink: 0; /* Il logo non si restringe */
+        }
+
+        /* BARRA DI RICERCA CENTRALE (Nuova posizione) */
+        .central-search-bar {
+            flex-grow: 1; /* Occupa tutto lo spazio disponibile */
+            max-width: 600px; /* Lunghezza massima (più lunga!) */
+            margin: 0 15px; /* Spazio laterale */
+        }
+
+        .search-form {
+            display: flex;
+            width: 100%; /* Riempie il contenitore */
+            background-color: #fff;
+            border-radius: 25px; /* Più arrotondato */
+            padding: 5px 15px;
+            border: 1px solid #ccc;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Leggera ombra */
+        }
+
+        .search-form input {
+            flex-grow: 1; /* L'input si allunga per riempire il form */
+            border: none;
+            outline: none;
+            padding: 8px;
+            font-size: 15px;
+            background: transparent;
+        }
+
+        .search-form button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            color: #333;
+            transition: color 0.2s;
+            padding-left: 10px;
+        }
+
+        .search-form button:hover {
+            color: #f39c12; /* Colore accento */
+        }
+
+        /* MENU DI NAVIGAZIONE */
+        .main-nav ul {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        /* ADATTAMENTO MOBILE */
+        @media (max-width: 900px) {
+            .main-header .container {
+                flex-wrap: wrap; /* Permette di andare a capo */
+            }
+
+            /* Su mobile, la barra di ricerca scende sotto */
+            .central-search-bar {
+                order: 3; /* Logo(1), Ham(2), Search(3) */
+                width: 100%;
+                max-width: 100%;
+                margin: 10px 0 0 0;
+            }
+
+            .main-nav {
+                order: 4;
+            }
+        }
+    </style>
 </head>
 <body>
 <header class="main-header">
     <div class="container">
         <div class="logo-group">
-            <img src="../images/logo.png" alt="UnisaTCG Logo" class="logo-image">
-            <p class="logo"><a href="../index.jsp">UnisaTCG</a></p>
+            <img src="${pageContext.request.contextPath}/images/logo.png" alt="UnisaTCG Logo" class="logo-image">
+            <p class="logo"><a href="${pageContext.request.contextPath}/index.jsp">UnisaTCG</a></p>
+        </div>
+
+        <div class="central-search-bar">
+            <form action="${pageContext.request.contextPath}/ricerca" method="get" class="search-form">
+                <input type="text" name="q" placeholder="Cerca la tua carta preferita..." required>
+                <button type="submit" title="Cerca">&#128269;</button>
+            </form>
         </div>
 
         <button id="hamburgerBtn" class="hamburger">&#9776;</button>
@@ -40,7 +133,7 @@
                 <%
                     if (utenteHeader != null && utenteHeader.isAdmin()) {
                 %>
-                <li><a href="${pageContext.request.contextPath}/admin/dashboard.jsp">Pannello Admin</a></li>
+                <li><a href="${pageContext.request.contextPath}/admin/dashboard.jsp">Admin</a></li>
                 <%
                     }
                 %>
