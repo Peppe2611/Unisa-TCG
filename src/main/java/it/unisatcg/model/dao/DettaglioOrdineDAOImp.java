@@ -16,7 +16,7 @@ public class DettaglioOrdineDAOImp implements DettaglioOrdineDAO {
 
     @Override
     public void doSave(DettaglioOrdine dettaglio, Connection con) throws SQLException {
-        String sql = "INSERT INTO dettaglio_ordine (ordine_id, prodotto_id, quantita, prezzo_unitario, indirizzo, cap) VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO dettaglioordine (ordine_id, prodotto_id, quantita, prezzo_unitario, indirizzo, cap) VALUES (?, ?, ?, ?, ?, ?)";
         try (PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, dettaglio.getOrdineId());
             ps.setInt(2, dettaglio.getProdottoId());

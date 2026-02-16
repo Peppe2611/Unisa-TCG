@@ -12,6 +12,7 @@
 <body>
 <%@ include file="common/header.jspf" %>
 <%
+    Utente utente = (Utente) session.getAttribute("utente");
     Carrello carrello = (Carrello) session.getAttribute("carrello");
     if (utente == null || carrello == null || carrello.getArticoli().isEmpty()) {
         response.sendRedirect("cart.jsp");
