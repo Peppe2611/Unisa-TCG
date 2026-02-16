@@ -2,6 +2,7 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
+    <title>Header</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/styles/style.css">
@@ -10,10 +11,10 @@
 <body>
 <header class="main-header">
     <div class="container">
-        <div class="logo-group"> <img src="../images/logo.png" alt="UnisaTCG Logo" class="logo-image">
+        <div class="logo-group">
+            <img src="../images/logo.png" alt="UnisaTCG Logo" class="logo-image">
             <p class="logo"><a href="../index.jsp">UnisaTCG</a></p>
         </div>
-
 
         <button id="hamburgerBtn" class="hamburger">&#9776;</button>
 
@@ -21,11 +22,12 @@
             <ul>
                 <li><a href="${pageContext.request.contextPath}/visualizza-prodotti">Prodotti</a></li>
                 <li><a href="${pageContext.request.contextPath}/visualizza-carrello">Carrello</a></li>
+
                 <%
-                    Utente utente = (Utente) session.getAttribute("utente");
-                    if (utente != null) {
+                    Utente utenteHeader = (Utente) session.getAttribute("utente");
+                    if (utenteHeader != null) {
                 %>
-                <li><a href="${pageContext.request.contextPath}/storico-ordini">Profilo</a></li>
+                <li><a href="${pageContext.request.contextPath}/profile.jsp">Profilo</a></li>
                 <li><a href="${pageContext.request.contextPath}/logout">Logout</a></li>
                 <%
                 } else {
@@ -34,8 +36,9 @@
                 <%
                     }
                 %>
+
                 <%
-                    if (utente != null && utente.isAdmin()) {
+                    if (utenteHeader != null && utenteHeader.isAdmin()) {
                 %>
                 <li><a href="${pageContext.request.contextPath}/admin/dashboard.jsp">Pannello Admin</a></li>
                 <%
@@ -45,6 +48,7 @@
         </nav>
     </div>
 </header>
+
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const hamburger = document.getElementById('hamburgerBtn');
