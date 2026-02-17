@@ -100,6 +100,18 @@ a:hover {
     margin-top: 5px;
 }
 
+.error-text {
+    color: #dc3545;
+    font-size: 0.85em;
+    display: block;
+    margin-top: 5px;
+    font-weight: normal;
+}
+
+.invalid-field {
+    border: 2px solid #dc3545 !important;
+}
+
 /* ==========================================================================
    3. Layout Principale (Header, Main, Footer)
    ========================================================================== */
@@ -502,7 +514,7 @@ main {
 /* --- Checkout --- */
 .checkout-grid {
     display: grid;
-    grid-template-columns: 2fr 1fr; /* Colonna sinistra più grande della destra */
+    grid-template-columns: 2fr 1fr; /
     gap: 30px;
 }
 
@@ -565,7 +577,7 @@ main {
 .management-table .btn { padding: 8px 12px; font-size: 0.9em; }
 
 /* ==========================================================================
-   6. Design Responsive (Unico Blocco Ordinato)
+   6. Design Responsive
    ========================================================================== */
 
 /* Stili per Tablet (e schermi più piccoli di 768px) */
@@ -661,10 +673,9 @@ main {
 }
 
 .search-form button:hover {
-    color: #f39c12; /* Colore accento (giallo/arancione tipico del logo) */
+    color: #f39c12;
 }
 
-/* Adattamento per mobile (opzionale) */
 @media (max-width: 768px) {
     .search-form input {
         width: 100px;
