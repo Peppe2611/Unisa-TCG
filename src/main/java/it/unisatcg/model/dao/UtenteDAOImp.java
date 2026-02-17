@@ -7,7 +7,6 @@ import java.util.List;
 
 public class UtenteDAOImp implements UtenteDAO {
 
-    // Metodo centralizzato per l'estrazione (DG_5: Manutenibilità)
     private Utente extractUtenteFromResultSet(ResultSet rs) throws SQLException {
         Utente utente = new Utente();
         utente.setId(rs.getInt("id"));
@@ -18,12 +17,22 @@ public class UtenteDAOImp implements UtenteDAO {
         utente.setIndirizzo(rs.getString("indirizzo"));
         utente.setCap(rs.getString("cap"));
         utente.setAdmin(rs.getBoolean("is_admin"));
+
+        // AGGIUNTA FONDAMENTALE PER IL BAN
+
+        try {
+            utente.setBanned(rs.getBoolean("is_banned"));
+        } catch (SQLException e) {
+            // Se la colonna non esiste ancora nel DB, ignoriamo l'errore per non bloccare tutto
+            utente.setBanned(false);
+        }
+
         return utente;
     }
 
     @Override
     public synchronized void doSave(Utente utente) throws SQLException {
-        String insertSQL = "INSERT INTO utente (nome, email, password_hash, telefono, indirizzo, cap, is_admin) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String insertSQL = "INSERT INTO utente (nome, email, password_hash, telefono, indirizzo, cap, is_admin, is_banned) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection connection = DBConnection.getConnection();
              PreparedStatement ps = connection.prepareStatement(insertSQL)) {
             ps.setString(1, utente.getNome());
@@ -33,9 +42,37 @@ public class UtenteDAOImp implements UtenteDAO {
             ps.setString(5, utente.getIndirizzo());
             ps.setString(6, utente.getCap());
             ps.setBoolean(7, utente.isAdmin());
+            ps.setBoolean(8, utente.isBanned());
             ps.executeUpdate();
         }
     }
+
+    // Metodo NUOVO per gestire il ban
+    public void doUpdateBan(int userId, boolean banStatus) throws SQLException {
+        String updateSQL = "UPDATE utente SET is_banned = ? WHERE id = ?";
+        try (Connection connection = DBConnection.getConnection();
+             PreparedStatement ps = connection.prepareStatement(updateSQL)) {
+            ps.setBoolean(1, banStatus);
+            ps.setInt(2, userId);
+            ps.executeUpdate();
+        }
+    }
+
+    @Override
+    public List<Utente> doRetrieveAll() throws SQLException {
+        List<Utente> utenti = new ArrayList<>();
+        String selectSQL = "SELECT * FROM utente";
+        try (Connection connection = DBConnection.getConnection();
+             Statement st = connection.createStatement();
+             ResultSet rs = st.executeQuery(selectSQL)) {
+            while (rs.next()) {
+                utenti.add(extractUtenteFromResultSet(rs));
+            }
+        }
+        return utenti;
+    }
+
+
 
     @Override
     public Utente doRetrieveByEmail(String email) throws SQLException {
@@ -64,22 +101,8 @@ public class UtenteDAOImp implements UtenteDAO {
     }
 
     @Override
-    public List<Utente> doRetrieveAll() throws SQLException {
-        List<Utente> utenti = new ArrayList<>();
-        String selectSQL = "SELECT * FROM utente";
-        try (Connection connection = DBConnection.getConnection();
-             Statement st = connection.createStatement();
-             ResultSet rs = st.executeQuery(selectSQL)) {
-            while (rs.next()) {
-                utenti.add(extractUtenteFromResultSet(rs));
-            }
-        }
-        return utenti;
-    }
-
-    @Override
     public void doUpdate(Utente utente) throws SQLException {
-        String updateSQL = "UPDATE utente SET nome=?, email=?, telefono=?, indirizzo=?, cap=?, is_admin=? WHERE id=?";
+        String updateSQL = "UPDATE utente SET nome=?, email=?, telefono=?, indirizzo=?, cap=?, is_admin=?, is_banned=? WHERE id=?";
         try (Connection connection = DBConnection.getConnection();
              PreparedStatement ps = connection.prepareStatement(updateSQL)) {
             ps.setString(1, utente.getNome());
@@ -88,7 +111,8 @@ public class UtenteDAOImp implements UtenteDAO {
             ps.setString(4, utente.getIndirizzo());
             ps.setString(5, utente.getCap());
             ps.setBoolean(6, utente.isAdmin());
-            ps.setInt(7, utente.getId());
+            ps.setBoolean(7, utente.isBanned());
+            ps.setInt(8, utente.getId());
             ps.executeUpdate();
         }
     }

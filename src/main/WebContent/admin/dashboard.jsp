@@ -20,6 +20,14 @@
                 Nuovo Prodotto
             </a>
 
+            <a href="${pageContext.request.contextPath}/admin/gestione-utenti" class="btn btn-primary" style="background-color: #6f42c1;">
+                Gestione Utenti
+            </a>
+
+            <a href="${pageContext.request.contextPath}/admin/gestione-recensioni" class="btn btn-primary" style="background-color: #d63384;">
+                Moderazione Recensioni
+            </a>
+
             <a href="${pageContext.request.contextPath}/admin/gestione-prodotti" class="btn btn-primary">
                 Gestione Prodotti
             </a>

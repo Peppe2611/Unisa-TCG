@@ -152,13 +152,13 @@ public class ProdottoDAOImp implements ProdottoDAO {
     }
 
     @Override
-    public void doDelete(int id) throws SQLException {
-        String deleteSQL = "DELETE FROM prodotto WHERE id = ?";
-
+    public boolean doDelete(int id) throws SQLException {
+        String sql = "DELETE FROM prodotto WHERE id = ?";
         try (Connection connection = DBConnection.getConnection();
-             PreparedStatement ps = connection.prepareStatement(deleteSQL)) {
+             PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, id);
-            ps.executeUpdate();
+            int result = ps.executeUpdate();
+            return result > 0;
         }
     }
 

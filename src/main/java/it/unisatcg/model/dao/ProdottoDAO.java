@@ -16,5 +16,5 @@ public interface ProdottoDAO {
     List<Prodotto> doRetrieveByNome(String search) throws SQLException;
     void doUpdate(Prodotto prodotto) throws SQLException;
     void doUpdateQuantita(int prodottoId, int quantitaDaSottrarre, Connection con) throws SQLException;
-    void doDelete(int id) throws SQLException;
+    public boolean doDelete(int id) throws SQLException;
 }
