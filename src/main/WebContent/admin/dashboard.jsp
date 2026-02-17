@@ -13,28 +13,28 @@
 <main class="container">
     <div class="dashboard-container">
         <h1 class="page-title">Benvenuto, <%= nomeAdmin %></h1>
-        <p>Pannello di Amministrazione</p>
 
         <div class="dashboard-actions" style="display: flex; gap: 20px; justify-content: center; margin-top: 30px;">
-            <a href="${pageContext.request.contextPath}/admin/new-product" class="btn btn-success">
-                Nuovo Prodotto
-            </a>
-
-            <a href="${pageContext.request.contextPath}/admin/gestione-utenti" class="btn btn-primary" style="background-color: #6f42c1;">
-                Gestione Utenti
-            </a>
-
-            <a href="${pageContext.request.contextPath}/admin/gestione-recensioni" class="btn btn-primary" style="background-color: #d63384;">
-                Moderazione Recensioni
+            <a href="${pageContext.request.contextPath}/admin/manage-orders" class="btn btn-primary" style="background-color: #2c3e50;">
+                Gestione Ordini
             </a>
 
             <a href="${pageContext.request.contextPath}/admin/gestione-prodotti" class="btn btn-primary">
                 Gestione Prodotti
             </a>
 
-            <a href="${pageContext.request.contextPath}/admin/manage-orders" class="btn btn-primary" style="background-color: #fb8500ff;">
-                Gestione Ordini
+            <a href="${pageContext.request.contextPath}/admin/new-product" class="btn btn-success">
+                Nuovo Prodotto
             </a>
+
+            <a href="${pageContext.request.contextPath}/admin/gestione-recensioni" class="btn btn-primary" style="background-color: #d63384;">
+                Moderazione Recensioni
+            </a>
+
+            <a href="${pageContext.request.contextPath}/admin/gestione-utenti" class="btn btn-primary" style="background-color: #6f42c1;">
+                Gestione Utenti
+            </a>
+
         </div>
     </div>
 </main>

@@ -1,9 +1,12 @@
 package it.unisatcg.control;
 
 import it.unisatcg.model.Prodotto;
+import it.unisatcg.model.Utente;
 import it.unisatcg.model.Recensione;
 import it.unisatcg.model.dao.ProdottoDAO;
 import it.unisatcg.model.dao.ProdottoDAOImp;
+import it.unisatcg.model.dao.UtenteDAO;
+import it.unisatcg.model.dao.UtenteDAOImp;
 import it.unisatcg.model.dao.RecensioneDAO;
 import it.unisatcg.model.dao.RecensioneDAOImp;
 import jakarta.servlet.RequestDispatcher;
@@ -39,17 +42,22 @@ public class ProductDetailServlet extends HttpServlet {
 
             request.setAttribute("prodotto", prodotto);
 
+            if (prodotto.getVenditoreId() != 1) {
+                UtenteDAO utenteDAO = new UtenteDAOImp();
+                Utente venditore = utenteDAO.doRetrieveByKey(prodotto.getVenditoreId());
+                if (venditore != null) {
+                    request.setAttribute("nomeVenditore", venditore.getNome());
+                }
+            }
 
-            it.unisatcg.model.dao.RecensioneDAO recensioneDAO = new it.unisatcg.model.dao.RecensioneDAOImp();
-            java.util.List<it.unisatcg.model.Recensione> recensioni = recensioneDAO.doRetrieveByProdotto(prodottoId);
+            RecensioneDAO recensioneDAO = new RecensioneDAOImp();
+            List<Recensione> recensioni = recensioneDAO.doRetrieveByProdotto(prodottoId);
             request.setAttribute("recensioni", recensioni);
-            // -----------------------------
 
             RequestDispatcher dispatcher = request.getRequestDispatcher("/product_detail.jsp");
             dispatcher.forward(request, response);
 
         } catch (SQLException e) {
-            e.printStackTrace();
             throw new ServletException("Errore durante il recupero del prodotto dal database.", e);
         }
     }

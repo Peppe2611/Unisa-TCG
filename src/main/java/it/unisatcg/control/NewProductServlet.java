@@ -13,7 +13,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 @WebServlet("/admin/new-product")
-@MultipartConfig(maxFileSize = 16177215) // Supporto file fino a ~16MB
+@MultipartConfig(maxFileSize = 16177215)
 public class NewProductServlet extends HttpServlet {
 
     @Override
@@ -37,10 +37,8 @@ public class NewProductServlet extends HttpServlet {
         double prezzo = Double.parseDouble(request.getParameter("prezzo"));
         int quantita = Integer.parseInt(request.getParameter("quantita"));
 
-        // MODIFICA: Recuperiamo l'ID dal menu a tendina (name="categoria")
         int categoriaId = Integer.parseInt(request.getParameter("categoria"));
 
-        // Gestione Foto
         Part filePart = request.getPart("foto");
         byte[] fotoBytes = null;
 
@@ -58,13 +56,11 @@ public class NewProductServlet extends HttpServlet {
         prodotto.setCategoriaId(categoriaId);
         prodotto.setFoto(fotoBytes);
 
-        // Imposta un venditore di default (es. 1 admin)
         prodotto.setVenditoreId(1);
 
         ProdottoDAO prodottoDAO = new ProdottoDAOImp();
         try {
             prodottoDAO.doSave(prodotto);
-            // Reindirizza alla lista prodotti dopo il salvataggio
             response.sendRedirect(request.getContextPath() + "/admin/gestione-prodotti");
         } catch (SQLException e) {
             e.printStackTrace();

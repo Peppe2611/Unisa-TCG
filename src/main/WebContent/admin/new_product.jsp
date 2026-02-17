@@ -34,7 +34,6 @@
                     </div>
                 </div>
 
-                <%-- MODIFICA: Menu a tendina per le categorie --%>
                 <div class="form-group">
                     <label for="categoria">Categoria</label>
                     <select id="categoria" name="categoria" required class="form-control">
