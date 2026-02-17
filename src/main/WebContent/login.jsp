@@ -38,7 +38,7 @@
         <button type="submit" class="btn btn-primary" style="width: 100%;">Accedi</button>
 
         <div class="auth-links">
-          <p>Non hai un account? <a href="${pageContext.request.contextPath}/registrazione.jsp">Registrati</a></p>
+          <p>Non hai un account? <a href="${pageContext.request.contextPath}/register.jsp">Registrati</a></p>
         </div>
       </form>
     </div>
