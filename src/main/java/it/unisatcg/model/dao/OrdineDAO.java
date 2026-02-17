@@ -13,4 +13,5 @@ public interface OrdineDAO {
     List<Ordine> doRetrieveAll() throws SQLException;
     void doUpdate(Ordine ordine) throws SQLException;
     void doDelete(int id) throws SQLException;
+    void updateStatus(int id, String status) throws SQLException;
 }

@@ -1,10 +1,28 @@
 package it.unisatcg.control;
 
-import it.unisatcg.model.*;
-import it.unisatcg.model.dao.*;
+
+import it.unisatcg.model.Ordine;
+import it.unisatcg.model.Utente;
+import it.unisatcg.model.Carrello;
+import it.unisatcg.model.ArticoloCarrello;
+import it.unisatcg.model.DettaglioOrdine;
+
+import it.unisatcg.model.dao.DBConnection;
+import it.unisatcg.model.dao.OrdineDAO;
+import it.unisatcg.model.dao.DettaglioOrdineDAO;
+import it.unisatcg.model.dao.DettaglioOrdineDAOImp;
+import it.unisatcg.model.dao.ProdottoDAO;
+import it.unisatcg.model.dao.ProdottoDAOImp;
+import it.unisatcg.model.dao.OrdineDAOImp;
+
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.*;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+
+
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -39,6 +57,7 @@ public class CheckoutServlet extends HttpServlet {
                 ordine.setClienteId(utente.getId());
                 ordine.setDataOrdine(java.time.LocalDateTime.now());
                 ordine.setTotale(carrello.getTotaleComplessivo());
+                ordine.setStatus("Ordinato");
                 ordineDAO.doSave(ordine, connection);
 
                 // 2. Salva i dettagli e aggiorna il magazzino

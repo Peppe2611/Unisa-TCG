@@ -1,9 +1,11 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ page import="it.unisatcg.model.Utente" %>
 <%@ include file="../common/header.jspf" %>
+
 <%
+    Utente utente = (Utente) session.getAttribute("utente");
     String nomeAdmin = (utente != null && utente.isAdmin()) ? utente.getNome() : "Admin";
 %>
+
 <html>
 <head>
     <title>Dashboard Amministratore</title>
@@ -23,6 +25,10 @@
 
             <a href="${pageContext.request.contextPath}/admin/manage-products" class="btn btn-primary">
                 Gestione Prodotti
+            </a>
+
+            <a href="${pageContext.request.contextPath}/admin/admin_orders.jsp" class="btn btn-primary">
+                Gestione Ordini
             </a>
         </div>
     </div>

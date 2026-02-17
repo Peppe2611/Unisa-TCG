@@ -7,6 +7,7 @@ public class Ordine {
     private int clienteId;
     private LocalDateTime dataOrdine;
     private double totale;
+    private String status;
 
     public Ordine() {}
 
@@ -18,4 +19,6 @@ public class Ordine {
     public void setDataOrdine(LocalDateTime dataOrdine) { this.dataOrdine = dataOrdine; }
     public double getTotale() { return totale; }
     public void setTotale(double totale) { this.totale = totale; }
+    public String getStatus() {return status;}
+    public void setStatus(String status){this.status = status;}
 }
