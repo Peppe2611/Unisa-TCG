@@ -1,31 +1,25 @@
 package it.unisatcg.control;
 
-import it.unisatcg.model.Categoria;
 import it.unisatcg.model.Prodotto;
-import it.unisatcg.model.dao.CategoriaDAO;
-import it.unisatcg.model.dao.CategoriaDAOImp;
-import it.unisatcg.model.dao.ProdottoDAO;
-import it.unisatcg.model.dao.ProdottoDAOImp;
+import it.unisatcg.model.Categoria;
+import it.unisatcg.model.dao.*;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.Part;
-
+import jakarta.servlet.http.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.SQLException;
 import java.util.List;
 
 @WebServlet("/admin/new-product")
-@MultipartConfig(maxFileSize = 16177215) // Max upload size ~16MB
+@MultipartConfig(maxFileSize = 16177215) // Supporto file fino a ~16MB
 public class NewProductServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {
+            // Carichiamo la lista categorie per il menu a tendina
             CategoriaDAO catDAO = new CategoriaDAOImp();
             List<Categoria> lista = catDAO.doRetrieveAll();
             request.setAttribute("listaCategorie", lista);
@@ -40,26 +34,13 @@ public class NewProductServlet extends HttpServlet {
 
         String nome = request.getParameter("nome");
         String descrizione = request.getParameter("descrizione");
+        double prezzo = Double.parseDouble(request.getParameter("prezzo"));
+        int quantita = Integer.parseInt(request.getParameter("quantita"));
 
-        // Gestione errori di parsing per numeri
-        double prezzo = 0;
-        int quantita = 0;
-        int categoriaId = 0;
-        try {
-            prezzo = Double.parseDouble(request.getParameter("prezzo"));
-            quantita = Integer.parseInt(request.getParameter("quantita"));
-            categoriaId = Integer.parseInt(request.getParameter("categoriaId")); // Assicurati che nella JSP il select abbia name="categoriaId"
-        } catch (NumberFormatException e) {
-            e.printStackTrace();
-            // Puoi gestire l'errore o reindirizzare
-        }
+        // MODIFICA: Recuperiamo l'ID dal menu a tendina (name="categoria")
+        int categoriaId = Integer.parseInt(request.getParameter("categoria"));
 
-        String specifiche = request.getParameter("specifiche");
-        String disponibileParam = request.getParameter("disponibile");
-        boolean isDisponibile = "true".equals(disponibileParam);
-
-        // --- GESTIONE FILE IMMAGINE ---
-        // IMPORTANTE: Nella JSP il campo deve chiamarsi name="foto"
+        // Gestione Foto
         Part filePart = request.getPart("foto");
         byte[] fotoBytes = null;
 
@@ -68,7 +49,6 @@ public class NewProductServlet extends HttpServlet {
                 fotoBytes = inputStream.readAllBytes();
             }
         }
-        // ------------------------------
 
         Prodotto prodotto = new Prodotto();
         prodotto.setNome(nome);
@@ -76,17 +56,16 @@ public class NewProductServlet extends HttpServlet {
         prodotto.setPrezzo(prezzo);
         prodotto.setQuantita(quantita);
         prodotto.setCategoriaId(categoriaId);
-        prodotto.setSpecifiche(specifiche);
-        prodotto.setDisponibile(isDisponibile);
-        prodotto.setFoto(fotoBytes); // Setta i byte dell'immagine
+        prodotto.setFoto(fotoBytes);
 
-        // Imposta un venditore di default (es. 1) o prendilo dalla sessione
+        // Imposta un venditore di default (es. 1 admin)
         prodotto.setVenditoreId(1);
 
         ProdottoDAO prodottoDAO = new ProdottoDAOImp();
         try {
             prodottoDAO.doSave(prodotto);
-            response.sendRedirect(request.getContextPath() + "/admin/gestione-prodotti"); // Reindirizza alla lista corretta
+            // Reindirizza alla lista prodotti dopo il salvataggio
+            response.sendRedirect(request.getContextPath() + "/admin/gestione-prodotti");
         } catch (SQLException e) {
             e.printStackTrace();
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Errore salvataggio prodotto: " + e.getMessage());

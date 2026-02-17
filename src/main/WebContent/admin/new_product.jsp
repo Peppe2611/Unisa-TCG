@@ -1,5 +1,9 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="java.util.List, it.unisatcg.model.Categoria" %>
+<%
+    // Recupero la lista inviata dalla Servlet
+    List<Categoria> categorie = (List<Categoria>) request.getAttribute("listaCategorie");
+%>
 <%@ include file="../common/header.jspf" %>
 
 <main class="container">
@@ -30,10 +34,21 @@
                     </div>
                 </div>
 
+                <%-- MODIFICA: Menu a tendina per le categorie --%>
                 <div class="form-group">
-                    <label for="categoria">Categoria ID</label>
-                    <%-- Se hai la lista categorie nella request usala, altrimenti input manuale --%>
-                    <input type="number" id="categoria" name="categoriaId" required class="form-control">
+                    <label for="categoria">Categoria</label>
+                    <select id="categoria" name="categoria" required class="form-control">
+                        <option value="" disabled selected>Seleziona una categoria...</option>
+                        <%
+                            if (categorie != null) {
+                                for (Categoria c : categorie) {
+                        %>
+                        <option value="<%= c.getId() %>"><%= c.getNome() %></option>
+                        <%
+                                }
+                            }
+                        %>
+                    </select>
                 </div>
 
                 <div class="form-group">
