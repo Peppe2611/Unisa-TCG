@@ -23,15 +23,33 @@ public class ProdottoDAOImp implements ProdottoDAO {
 
     @Override
     public synchronized void doSave(Prodotto prodotto) throws SQLException {
-        String insertSQL = "INSERT INTO prodotto (nome, descrizione, prezzo, quantita, categoria_id, specifiche) VALUES (?, ?, ?, ?, ?, ?)";
+        // Ho aggiunto la colonna venditore_id e anche la colonna foto (che mancava nel tuo codice originale)
+        String insertSQL = "INSERT INTO prodotto (nome, descrizione, prezzo, quantita, categoria_id, specifiche, foto, venditore_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+
         try (Connection connection = DBConnection.getConnection();
              PreparedStatement ps = connection.prepareStatement(insertSQL)) {
+
             ps.setString(1, prodotto.getNome());
             ps.setString(2, prodotto.getDescrizione());
             ps.setDouble(3, prodotto.getPrezzo());
             ps.setInt(4, prodotto.getQuantita());
             ps.setInt(5, prodotto.getCategoriaId());
             ps.setString(6, prodotto.getSpecifiche());
+
+            // Gestione BLOB Foto
+            if (prodotto.getFoto() != null) {
+                ps.setBytes(7, prodotto.getFoto());
+            } else {
+                ps.setNull(7, Types.BLOB);
+            }
+
+            // Gestione Venditore (Se è 0 o negativo, mettiamo NULL -> prodotto del negozio)
+            if (prodotto.getVenditoreId() > 0) {
+                ps.setInt(8, prodotto.getVenditoreId());
+            } else {
+                ps.setNull(8, Types.INTEGER);
+            }
+
             ps.executeUpdate();
         }
     }
