@@ -1,90 +1,58 @@
-<%@ page contentType="text/html; charset=UTF-8" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="it.unisatcg.model.Utente" %>
-<%@ page import="it.unisatcg.model.Ordine" %>
-<%@ page import="java.util.List" %>
-<%@ page import="java.time.format.DateTimeFormatter" %>
-
 <%
+    // Recupera l'utente dalla sessione
     Utente utente = (Utente) session.getAttribute("utente");
+
+    // Se l'utente non è loggato, reindirizza al login
     if (utente == null) {
         response.sendRedirect("login.jsp");
         return;
     }
-    List<Ordine> ordini = (List<Ordine>) request.getAttribute("ordini");
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 %>
+
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <title>Profilo Utente - UnisaTCG</title>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/styles/style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
 
 <%@ include file="common/header.jspf" %>
 
 <main class="container">
-    <div class="dashboard-container">
-        <h1 class="page-title">Area Personale</h1>
-        <p>Gestisci i tuoi dati e visualizza i tuoi acquisti</p>
+    <div class="profile-container">
+        <h1 class="page-title">Il mio Profilo</h1>
 
-        <div style="display: flex; gap: 30px; flex-wrap: wrap; align-items: flex-start;">
+        <div class="profile-card">
+            <div class="profile-info">
+                <p><strong>Nome:</strong> <%= utente.getNome() %></p>
 
-            <%-- SEZIONE PROFILO --%>
-            <div class="checkout-box" style="flex: 1; min-width: 350px;">
-                <h3>👤 Il tuo profilo</h3>
-                <form method="post" action="updateProfilo">
-                    <input type="hidden" name="id" value="<%= utente.getId() %>" />
-
-                    <div class="form-group" style="margin-bottom: 15px;">
-                        <label style="font-weight: bold;">Nome:</label>
-                        <input type="text" name="nome" value="<%= utente.getNome() %>" class="form-control" required style="width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #ddd;"/>
-                    </div>
-
-                    <div class="form-group" style="margin-bottom: 15px;">
-                        <label style="font-weight: bold;">Email:</label>
-                        <input type="email" name="email" value="<%= utente.getEmail() %>" class="form-control" required style="width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #ddd;"/>
-                    </div>
-
-                    <div class="form-group" style="margin-bottom: 15px;">
-                        <label style="font-weight: bold;">Indirizzo:</label>
-                        <input type="text" name="indirizzo" value="<%= utente.getIndirizzo() %>" class="form-control" style="width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #ddd;"/>
-                    </div>
-
-                    <button type="submit" class="btn btn-success" style="width: 100%; margin-top: 10px;">💾 Salva Modifiche</button>
-                </form>
+                <p><strong>Email:</strong> <%= utente.getEmail() %></p>
+                <p><strong>Telefono:</strong> <%= utente.getTelefono() != null ? utente.getTelefono() : "Non inserito" %></p>
+                <p><strong>Indirizzo:</strong> <%= utente.getIndirizzo() != null ? utente.getIndirizzo() : "Non inserito" %></p>
+                <p><strong>CAP:</strong> <%= utente.getCap() != null ? utente.getCap() : "Non inserito" %></p>
             </div>
 
-            <%-- SEZIONE STORICO ORDINI --%>
-            <div class="checkout-box" style="flex: 2; min-width: 500px;">
-                <h3>📦 Storico Ordini</h3>
+            <div class="profile-actions" style="margin-top: 20px; display: flex; gap: 10px; flex-wrap: wrap;">
+                <%-- Pulsante Modifica Profilo --%>
+                <a href="modifica_profilo.jsp" class="btn btn-primary">Modifica Profilo</a>
 
-                <% if (ordini == null || ordini.isEmpty()) { %>
-                <p style="text-align: center; color: #666; padding: 20px;">Non hai ancora effettuato ordini.</p>
-                <% } else { %>
-                <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
-                    <thead>
-                    <tr style="background-color: #f8f9fa; border-bottom: 2px solid #eee;">
-                        <th style="padding: 12px; text-align: left;">ID Ordine</th>
-                        <th style="padding: 12px; text-align: left;">Data</th>
-                        <th style="padding: 12px; text-align: left;">Totale</th>
-                        <th style="padding: 12px; text-align: center;">Stato</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <% for (Ordine o : ordini) { %>
-                    <tr style="border-bottom: 1px solid #eee;">
-                        <td style="padding: 12px;">#<%= o.getId() %></td>
-                        <td style="padding: 12px;"><%= o.getDataOrdine().format(formatter) %></td>
-                        <td style="padding: 12px; font-weight: bold;">€ <%= String.format("%.2f", o.getTotale()) %></td>
-                        <td style="padding: 12px; text-align: center;">
-                                        <span style="padding: 4px 10px; border-radius: 20px; font-size: 0.85rem; font-weight: bold;
-                                            <%= o.getStatus().equalsIgnoreCase("Consegnato") ? "background: #d4edda; color: #155724;" : "background: #fff3cd; color: #856404;" %>">
-                                            <%= o.getStatus().toUpperCase() %>
-                                        </span>
-                        </td>
-                    </tr>
-                    <% } %>
-                    </tbody>
-                </table>
-                <% } %>
+                <%-- NUOVO: Pulsante Storico Ordini (Verde) --%>
+                <a href="${pageContext.request.contextPath}/storico-ordini" class="btn btn-primary" style="background-color: #28a745; border-color: #28a745;">
+                    📦 I Miei Ordini
+                </a>
+
+                <%-- Pulsante Logout --%>
+                <a href="${pageContext.request.contextPath}/LogoutServlet" class="btn btn-danger">Logout</a>
             </div>
-
         </div>
     </div>
 </main>
 
 <%@ include file="common/footer.jspf" %>
+
+</body>
+</html>
