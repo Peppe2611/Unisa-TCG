@@ -2,17 +2,19 @@
 <%@ include file="common/header.jspf" %>
 
 <%
-    // Redirect se non loggato
     if (session.getAttribute("utente") == null) {
         response.sendRedirect("login.jsp");
         return;
     }
 %>
+<head>
+    <title>Vendita prodotti - UnisaTCG</title>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/styles/style.css">
+</head>
 
 <main class="container" style="max-width: 600px; margin-top: 30px;">
     <h2>Metti in vendita una carta</h2>
 
-    <%-- ENCTYPE è fondamentale per inviare immagini --%>
     <form action="vendi" method="post" enctype="multipart/form-data" class="form-style">
 
         <div class="form-group">
