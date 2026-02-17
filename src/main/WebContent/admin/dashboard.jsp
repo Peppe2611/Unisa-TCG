@@ -32,7 +32,7 @@
                 Gestione Prodotti
             </a>
 
-            <a href="${pageContext.request.contextPath}/admin/admin_orders.jsp" class="btn btn-primary">
+            <a href="${pageContext.request.contextPath}/admin/manage-orders" class="btn btn-primary" style="background-color: #fb8500ff;">
                 Gestione Ordini
             </a>
         </div>

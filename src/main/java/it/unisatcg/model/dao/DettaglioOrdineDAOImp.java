@@ -3,7 +3,9 @@ package it.unisatcg.model.dao;
 import it.unisatcg.model.DettaglioOrdine;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class DettaglioOrdineDAOImp implements DettaglioOrdineDAO {
 
@@ -45,6 +47,28 @@ public class DettaglioOrdineDAOImp implements DettaglioOrdineDAO {
                     d.setIndirizzo(rs.getString("indirizzo"));
                     d.setCap(rs.getString("cap"));
                     dettagli.add(d);
+                }
+            }
+        }
+        return dettagli;
+    }
+
+    @Override
+    public List<Map<String, Object>> doRetrieveFullDetailsByOrdine(int ordineId) throws SQLException {
+        List<Map<String, Object>> dettagli = new ArrayList<>();
+        String sql = "SELECT d.*, p.nome FROM dettaglioordine d JOIN prodotto p ON d.prodotto_id = p.id WHERE d.ordine_id = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, ordineId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("nome", rs.getString("nome"));
+                    map.put("quantita", rs.getInt("quantita"));
+                    map.put("prezzo", rs.getDouble("prezzo_unitario"));
+                    map.put("indirizzo", rs.getString("indirizzo"));
+                    map.put("cap", rs.getString("cap"));
+                    dettagli.add(map);
                 }
             }
         }

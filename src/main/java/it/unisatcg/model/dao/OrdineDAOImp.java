@@ -27,7 +27,7 @@ public class OrdineDAOImp implements it.unisatcg.model.dao.OrdineDAO {
             ps.setInt(1, ordine.getClienteId());
             ps.setTimestamp(2, Timestamp.valueOf(ordine.getDataOrdine()));
             ps.setDouble(3, ordine.getTotale());
-            ps.setString(4, ordine.getStatus());  // ✅ NUOVO CAMPO
+            ps.setString(4, ordine.getStatus());
 
             ps.executeUpdate();
 
