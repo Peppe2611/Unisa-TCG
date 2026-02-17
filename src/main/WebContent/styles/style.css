@@ -754,3 +754,71 @@ main {
     margin-bottom: 20px;
     border: 1px solid #e5e7eb;
 }
+
+/* --- FIX ALLINEAMENTO IMMAGINI --- */
+
+/* Centra le immagini nelle categorie (Home Page) */
+.category-item img {
+    display: block;
+    margin: 0 auto;
+}
+
+/* Centra le immagini nelle card dei prodotti (Pagina Prodotti) */
+.product-card img, .card img {
+    display: block;      /* Rende l'immagine un blocco a sé stante */
+    margin: 0 auto;      /* Margine auto a dx e sx = CENTRATO */
+    max-width: 100%;     /* Evita che l'immagine esca dal bordo */
+    object-fit: contain; /* Mantiene le proporzioni senza tagliare */
+}
+
+
+/* =========================================
+   FIX CENTRATURA E DIMENSIONE IMMAGINI PRODOTTO
+   ========================================= */
+
+/* 1. Assicuriamoci che la colonna di sinistra centri il contenuto */
+.product-detail-left {
+    display: flex !important;
+    flex-direction: column;
+    justify-content: center !important; /* Centra orizzontalmente */
+    align-items: center !important;     /* Centra verticalmente */
+    text-align: center;
+}
+
+/* 2. Il contenitore diretto dell'immagine */
+.product-detail-image {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* 3. L'immagine vera e propria */
+.product-detail-image img {
+    /* Limiti dimensionali */
+    max-width: 100% !important;   /* Non superare mai la larghezza della colonna */
+    max-height: 500px !important; /* ALTEZZA MASSIMA: Riduce le immagini enormi */
+    width: auto !important;       /* Mantiene le proporzioni (non strecciare) */
+
+    /* Allineamento e stile */
+    object-fit: contain !important; /* Adatta l'immagine senza tagliarla */
+    margin: 0 auto !important;      /* Margini automatici per sicurezza */
+    display: block !important;
+
+    /* Estetica opzionale */
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1); /* Leggera ombra per "staccarla" dallo sfondo */
+}
+
+/* FIX PER MOBILE: Su schermi piccoli riduciamo ancora l'altezza massima */
+@media (max-width: 768px) {
+    .product-detail-image img {
+        max-height: 300px !important;
+    }
+}
+
+/* Se usi una tabella per mostrare i prodotti (es. Admin), centra anche lì */
+td img {
+    display: block;
+    margin: 0 auto;
+}
