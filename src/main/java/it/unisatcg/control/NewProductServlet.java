@@ -1,22 +1,28 @@
 package it.unisatcg.control;
 
-import it.unisatcg.model.Prodotto;
 import it.unisatcg.model.Categoria;
-import it.unisatcg.model.dao.*;
+import it.unisatcg.model.Prodotto;
+import it.unisatcg.model.dao.CategoriaDAO;
+import it.unisatcg.model.dao.CategoriaDAOImp;
+import it.unisatcg.model.dao.ProdottoDAO;
+import it.unisatcg.model.dao.ProdottoDAOImp;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.*;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.Part;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.SQLException;
 import java.util.List;
 
-@WebServlet("/New_Product")
-@MultipartConfig(maxFileSize = 1024 * 1024 * 5) // Supporto BLOB fino a 5MB [cite: 178]
+@WebServlet("/admin/new-product")
+@MultipartConfig(maxFileSize = 16177215) // Max upload size ~16MB
 public class NewProductServlet extends HttpServlet {
 
-    // Carica le categorie prima di mostrare la pagina [cite: 259]
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {
@@ -31,30 +37,59 @@ public class NewProductServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+        String nome = request.getParameter("nome");
+        String descrizione = request.getParameter("descrizione");
+
+        // Gestione errori di parsing per numeri
+        double prezzo = 0;
+        int quantita = 0;
+        int categoriaId = 0;
         try {
-            Prodotto p = new Prodotto();
-            p.setNome(request.getParameter("nome"));
-            p.setDescrizione(request.getParameter("descrizione"));
-            p.setPrezzo(Double.parseDouble(request.getParameter("prezzo")));
-            p.setQuantita(Integer.parseInt(request.getParameter("quantita")));
-            p.setCategoriaId(Integer.parseInt(request.getParameter("categoriaId")));
-            p.setDisponibile(Boolean.parseBoolean(request.getParameter("disponibile")));
-            p.setSpecifiche(request.getParameter("specifiche"));
-
-            // Gestione foto BLOB [cite: 273, 276]
-            Part filePart = request.getPart("foto");
-            if (filePart != null && filePart.getSize() > 0) {
-                try (InputStream is = filePart.getInputStream()) {
-                    p.setFoto(is.readAllBytes());
-                }
-            }
-
-            new ProdottoDAOImp().doSave(p);
-            response.sendRedirect("admin/manage-products");
-        } catch (Exception e) {
+            prezzo = Double.parseDouble(request.getParameter("prezzo"));
+            quantita = Integer.parseInt(request.getParameter("quantita"));
+            categoriaId = Integer.parseInt(request.getParameter("categoriaId")); // Assicurati che nella JSP il select abbia name="categoriaId"
+        } catch (NumberFormatException e) {
             e.printStackTrace();
-            request.setAttribute("errore", "Errore: " + e.getMessage());
-            doGet(request, response); // Ricarica le categorie in caso di errore
+            // Puoi gestire l'errore o reindirizzare
+        }
+
+        String specifiche = request.getParameter("specifiche");
+        String disponibileParam = request.getParameter("disponibile");
+        boolean isDisponibile = "true".equals(disponibileParam);
+
+        // --- GESTIONE FILE IMMAGINE ---
+        // IMPORTANTE: Nella JSP il campo deve chiamarsi name="foto"
+        Part filePart = request.getPart("foto");
+        byte[] fotoBytes = null;
+
+        if (filePart != null && filePart.getSize() > 0) {
+            try (InputStream inputStream = filePart.getInputStream()) {
+                fotoBytes = inputStream.readAllBytes();
+            }
+        }
+        // ------------------------------
+
+        Prodotto prodotto = new Prodotto();
+        prodotto.setNome(nome);
+        prodotto.setDescrizione(descrizione);
+        prodotto.setPrezzo(prezzo);
+        prodotto.setQuantita(quantita);
+        prodotto.setCategoriaId(categoriaId);
+        prodotto.setSpecifiche(specifiche);
+        prodotto.setDisponibile(isDisponibile);
+        prodotto.setFoto(fotoBytes); // Setta i byte dell'immagine
+
+        // Imposta un venditore di default (es. 1) o prendilo dalla sessione
+        prodotto.setVenditoreId(1);
+
+        ProdottoDAO prodottoDAO = new ProdottoDAOImp();
+        try {
+            prodottoDAO.doSave(prodotto);
+            response.sendRedirect(request.getContextPath() + "/admin/gestione-prodotti"); // Reindirizza alla lista corretta
+        } catch (SQLException e) {
+            e.printStackTrace();
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Errore salvataggio prodotto: " + e.getMessage());
         }
     }
 }

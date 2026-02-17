@@ -1,80 +1,50 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="java.util.List, it.unisatcg.model.Categoria" %>
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Nuovo Prodotto - Admin</title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/styles/style.css">
-</head>
-<body>
 <%@ include file="../common/header.jspf" %>
 
 <main class="container">
     <div class="auth-form-container">
-        <div class="auth-form-box" style="max-width: 800px;"> <%-- Box più largo per comodità --%>
+        <div class="auth-form-box" style="max-width: 800px; margin: 40px auto;">
             <h1 class="page-title">Aggiungi Prodotto</h1>
 
-            <form action="${pageContext.request.contextPath}/New_Product" method="post" enctype="multipart/form-data">
+            <form action="${pageContext.request.contextPath}/admin/new-product" method="post" enctype="multipart/form-data">
+
                 <div class="form-group">
                     <label for="nome">Nome Prodotto</label>
-                    <input type="text" id="nome" name="nome" required>
+                    <input type="text" id="nome" name="nome" required class="form-control">
                 </div>
 
                 <div class="form-group">
                     <label for="descrizione">Descrizione</label>
-                    <textarea id="descrizione" name="descrizione" rows="3" required></textarea>
+                    <textarea id="descrizione" name="descrizione" rows="3" required class="form-control"></textarea>
                 </div>
 
-                <div class="form-row">
-                    <div class="form-group">
+                <div class="form-row" style="display: flex; gap: 20px;">
+                    <div class="form-group" style="flex: 1;">
                         <label for="prezzo">Prezzo (€)</label>
-                        <input type="number" step="0.01" id="prezzo" name="prezzo" required>
+                        <input type="number" step="0.01" id="prezzo" name="prezzo" required class="form-control">
                     </div>
-                    <div class="form-group">
+                    <div class="form-group" style="flex: 1;">
                         <label for="quantita">Quantità</label>
-                        <input type="number" id="quantita" name="quantita" required>
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="categoriaId">Categoria</label>
-                        <select id="categoriaId" name="categoriaId" required>
-                            <option value="" disabled selected>Scegli...</option>
-                            <%
-                                List<Categoria> categorie = (List<Categoria>) request.getAttribute("listaCategorie");
-                                if (categorie != null) {
-                                    for (Categoria c : categorie) {
-                            %>
-                            <option value="<%= c.getId() %>"><%= c.getNome() %></option>
-                            <% } } %>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="disponibile">Visibilità</label>
-                        <select id="disponibile" name="disponibile">
-                            <option value="true">Immediata</option>
-                            <option value="false">Bozza (Nascosto)</option>
-                        </select>
+                        <input type="number" id="quantita" name="quantita" required class="form-control">
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <label for="specifiche">Specifiche Tecniche</label>
-                    <input type="text" id="specifiche" name="specifiche">
+                    <label for="categoria">Categoria ID</label>
+                    <%-- Se hai la lista categorie nella request usala, altrimenti input manuale --%>
+                    <input type="number" id="categoria" name="categoriaId" required class="form-control">
                 </div>
 
                 <div class="form-group">
-                    <label for="foto">Foto Prodotto (BLOB)</label>
-                    <input type="file" id="foto" name="foto" accept="image/*" required>
+                    <label for="foto">Foto Prodotto</label>
+                    <input type="file" id="foto" name="foto" accept="image/*" required class="form-control">
                 </div>
 
-                <button type="submit" class="btn btn-success" style="width: 100%;">Crea Prodotto</button>
+                <button type="submit" class="btn btn-success" style="width: 100%; margin-top: 20px;">Crea Prodotto</button>
             </form>
         </div>
     </div>
 </main>
 
 <%@ include file="../common/footer.jspf" %>
-</body>
-</html>

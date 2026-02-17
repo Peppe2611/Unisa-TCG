@@ -17,13 +17,20 @@ public class ProdottoDAOImp implements ProdottoDAO {
         prodotto.setQuantita(rs.getInt("quantita"));
         prodotto.setCategoriaId(rs.getInt("categoria_id"));
         prodotto.setSpecifiche(rs.getString("specifiche"));
-        // Aggiungere supporto BLOB QUA
+        prodotto.setVenditoreId(rs.getInt("venditore_id")); // Aggiunto per completezza
+
+        // CORREZIONE FOTO: Recupero del BLOB
+        Blob blob = rs.getBlob("foto");
+        if (blob != null) {
+            prodotto.setFoto(blob.getBytes(1, (int) blob.length()));
+        }
+
         return prodotto;
     }
 
     @Override
     public synchronized void doSave(Prodotto prodotto) throws SQLException {
-        // Ho aggiunto la colonna venditore_id e anche la colonna foto (che mancava nel tuo codice originale)
+
         String insertSQL = "INSERT INTO prodotto (nome, descrizione, prezzo, quantita, categoria_id, specifiche, foto, venditore_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection connection = DBConnection.getConnection();
@@ -106,16 +113,28 @@ public class ProdottoDAOImp implements ProdottoDAO {
 
     @Override
     public void doUpdate(Prodotto prodotto) throws SQLException {
-        String updateSQL = "UPDATE prodotto SET nome=?, descrizione=?, prezzo=?, quantita=?, categoria_id=?, specifiche=? WHERE id=?";
+        // La query aggiorna anche la foto
+        String updateSQL = "UPDATE prodotto SET nome=?, descrizione=?, prezzo=?, quantita=?, categoria_id=?, specifiche=?, foto=? WHERE id=?";
+
         try (Connection connection = DBConnection.getConnection();
              PreparedStatement ps = connection.prepareStatement(updateSQL)) {
+
             ps.setString(1, prodotto.getNome());
             ps.setString(2, prodotto.getDescrizione());
             ps.setDouble(3, prodotto.getPrezzo());
             ps.setInt(4, prodotto.getQuantita());
             ps.setInt(5, prodotto.getCategoriaId());
             ps.setString(6, prodotto.getSpecifiche());
-            ps.setInt(7, prodotto.getId());
+
+            // GESTIONE FOTO
+            if (prodotto.getFoto() != null && prodotto.getFoto().length > 0) {
+                ps.setBytes(7, prodotto.getFoto());
+            } else {
+                ps.setNull(7, java.sql.Types.BLOB);
+            }
+
+            ps.setInt(8, prodotto.getId());
+
             ps.executeUpdate();
         }
     }

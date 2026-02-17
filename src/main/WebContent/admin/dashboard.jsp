@@ -1,29 +1,26 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ include file="../common/header.jspf" %>
-
+<%@ page import="it.unisatcg.model.Utente" %>
 <%
     Utente utente = (Utente) session.getAttribute("utente");
-    String nomeAdmin = (utente != null && utente.isAdmin()) ? utente.getNome() : "Admin";
+    if(utente == null || !utente.isAdmin()){
+        response.sendRedirect(request.getContextPath() + "/login.jsp");
+        return;
+    }
+    String nomeAdmin = utente.getNome();
 %>
-
-<html>
-<head>
-    <title>Dashboard Amministratore</title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/styles/style.css">
-</head>
-<body>
+<%@ include file="../common/header.jspf" %>
 
 <main class="container">
     <div class="dashboard-container">
         <h1 class="page-title">Benvenuto, <%= nomeAdmin %></h1>
-        <p>Seleziona un'operazione per iniziare.</p>
+        <p>Pannello di Amministrazione</p>
 
-        <div class="dashboard-actions">
-            <a href="${pageContext.request.contextPath}New_Product" class="btn btn-success">
+        <div class="dashboard-actions" style="display: flex; gap: 20px; justify-content: center; margin-top: 30px;">
+            <a href="${pageContext.request.contextPath}/admin/new-product" class="btn btn-success">
                 Nuovo Prodotto
             </a>
 
-            <a href="${pageContext.request.contextPath}/admin/manage-products" class="btn btn-primary">
+            <a href="${pageContext.request.contextPath}/admin/gestione-prodotti" class="btn btn-primary">
                 Gestione Prodotti
             </a>
 
@@ -35,5 +32,3 @@
 </main>
 
 <%@ include file="../common/footer.jspf" %>
-</body>
-</html>
