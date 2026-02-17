@@ -21,13 +21,14 @@ public class CheckoutServlet extends HttpServlet {
             response.sendRedirect("login.jsp");
             return;
         }
+
         if (carrello == null || carrello.getArticoli().isEmpty()) {
             response.sendRedirect("cart.jsp");
             return;
         }
 
         try (Connection connection = DBConnection.getConnection()) {
-            connection.setAutoCommit(false); // Inizio Transazione
+            connection.setAutoCommit(false);
 
             try {
                 OrdineDAO ordineDAO = new OrdineDAOImp();
@@ -52,16 +53,15 @@ public class CheckoutServlet extends HttpServlet {
                     dettaglio.setCap(utente.getCap());
 
                     dettaglioDAO.doSave(dettaglio, connection);
-                    // Usiamo il metodo che avevamo preparato per scalare le scorte
                     prodottoDAO.doUpdateQuantita(articolo.getProdotto().getId(), articolo.getQuantita(), connection);
                 }
 
-                connection.commit(); // Conferma tutto
+                connection.commit();
                 session.removeAttribute("carrello");
                 response.sendRedirect("conferma-ordine.jsp?orderId=" + ordine.getId());
 
             } catch (SQLException e) {
-                connection.rollback(); // Annulla tutto in caso di errore
+                connection.rollback();
                 throw e;
             }
         } catch (SQLException e) {

@@ -10,7 +10,6 @@
   <div class="auth-form-box">
     <h2>Accedi</h2>
 
-    <%-- Messaggio di Successo --%>
     <%
       if ("success".equals(request.getParameter("registration"))) {
     %>
@@ -21,7 +20,6 @@
       }
     %>
 
-    <%-- Logica Errori Accorpata (Risolve la barra rossa vuota) --%>
     <%
       String error = request.getParameter("error");
       String errorMessage = null;
@@ -33,10 +31,11 @@
           errorMessage = "<strong>Si è verificato un errore del server.</strong> Riprova più tardi.";
         } else if ("unauthorized".equals(error)) {
           errorMessage = "<strong>Accesso Negato:</strong> Devi essere un amministratore per visualizzare quella pagina.";
+        } else if ("checkout_required".equals(error)) {
+          errorMessage = "<strong>Accesso Richiesto:</strong> Effettua il login per procedere al completamento dell'ordine.";
         }
       }
 
-      // Stampiamo il div SOLO se abbiamo effettivamente un messaggio da mostrare
       if (errorMessage != null) {
     %>
     <div class="error-message">

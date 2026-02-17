@@ -731,3 +731,26 @@ main {
         font-size: 1.2em;
     }
 }
+
+.error-text {
+    color: #dc3545;
+    font-size: 0.85em;
+    display: block;
+    margin-top: 5px;
+    font-weight: normal;
+}
+
+.invalid-field {
+    border: 2px solid #dc3545 !important;
+    background-color: #fff8f8;
+}
+
+/* Miglioramento visivo per le sezioni checkout */
+.checkout-box {
+    background-color: #fff;
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    margin-bottom: 20px;
+    border: 1px solid #e5e7eb;
+}

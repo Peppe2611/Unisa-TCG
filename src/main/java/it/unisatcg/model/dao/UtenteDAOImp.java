@@ -24,7 +24,6 @@ public class UtenteDAOImp implements UtenteDAO {
     @Override
     public synchronized void doSave(Utente utente) throws SQLException {
         String insertSQL = "INSERT INTO utente (nome, email, password_hash, telefono, indirizzo, cap, is_admin) VALUES (?, ?, ?, ?, ?, ?, ?)";
-        // MODIFICA: try-with-resources per Affidabilità (DG_4)
         try (Connection connection = DBConnection.getConnection();
              PreparedStatement ps = connection.prepareStatement(insertSQL)) {
             ps.setString(1, utente.getNome());

@@ -27,7 +27,6 @@
         <h3><%= p.getNome() %></h3>
         <p>Prezzo unitario: €<%= String.format("%.2f", p.getPrezzo()) %></p>
 
-        <%-- FIX: Aggiornamento quantità --%>
         <form action="gestione-carrello" method="post" style="display:inline;">
           <input type="hidden" name="azione" value="aggiorna">
           <input type="hidden" name="prodottoId" value="<%= p.getId() %>">
@@ -38,7 +37,6 @@
       <div style="text-align: right;">
         <p>Subtotale: <strong>€<%= String.format("%.2f", articolo.getPrezzoTotale()) %></strong></p>
 
-        <%-- FIX: Rimozione --%>
         <form action="gestione-carrello" method="post">
           <input type="hidden" name="azione" value="rimuovi">
           <input type="hidden" name="prodottoId" value="<%= p.getId() %>">
@@ -50,8 +48,13 @@
   </div>
   <div class="cart-summary" style="margin-top: 40px; text-align: right; background: white; padding: 20px; border-radius: 8px;">
     <h2>Totale: €<%= String.format("%.2f", carrello.getTotaleComplessivo()) %></h2>
-    <a href="checkout.jsp" class="btn btn-primary" style="display:inline-block; margin-top:10px;">Vai al Checkout</a>
-  </div>
+      <% if (session.getAttribute("utente") == null) { %>
+    <%-- Se non è loggato, lo mandiamo alla login con l'errore specifico --%>
+    <a href="login.jsp?error=checkout_required" class="btn btn-primary">Vai al Checkout</a>
+      <% } else { %>
+    <%-- Se è loggato, procede normalmente alla pagina del form --%>
+    <a href="checkout.jsp" class="btn btn-primary">Vai al Checkout</a>
+      <% } %>
   <% } %>
 </main>
 <%@ include file="common/footer.jspf" %>
