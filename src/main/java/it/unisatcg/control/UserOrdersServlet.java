@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 
-@WebServlet("/storico-ordini")
+@WebServlet("/storico-ordini") // <--- FONDAMENTALE per non avere 404
 public class UserOrdersServlet extends HttpServlet {
 
     @Override
@@ -25,6 +25,7 @@ public class UserOrdersServlet extends HttpServlet {
 
         OrdineDAOImp ordineDAO = new OrdineDAOImp();
         try {
+            // Recupera la LISTA degli ordini
             List<Ordine> ordini = ordineDAO.doRetrieveByUtente(utente.getId());
             request.setAttribute("ordini", ordini);
             request.getRequestDispatcher("/user_orders.jsp").forward(request, response);

@@ -1,5 +1,6 @@
 package it.unisatcg.model.dao;
 
+import it.unisatcg.model.DettaglioOrdine;
 import it.unisatcg.model.Ordine;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -14,4 +15,5 @@ public interface OrdineDAO {
     void doUpdate(Ordine ordine) throws SQLException;
     void doDelete(int id) throws SQLException;
     void updateStatus(int id, String status) throws SQLException;
+    public List<DettaglioOrdine> doRetrieveDettagli(int ordineId) throws SQLException;
 }

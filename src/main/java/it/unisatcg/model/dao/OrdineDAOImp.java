@@ -1,5 +1,6 @@
 package it.unisatcg.model.dao;
 
+import it.unisatcg.model.DettaglioOrdine;
 import it.unisatcg.model.Ordine;
 import java.sql.*;
 import java.util.ArrayList;
@@ -177,6 +178,50 @@ public class OrdineDAOImp implements it.unisatcg.model.dao.OrdineDAO {
         }
     }
 
+
+
+
+    public List<DettaglioOrdine> doRetrieveDettagli(int ordineId) throws SQLException {
+        List<DettaglioOrdine> dettagli = new ArrayList<>();
+
+
+        String sql = "SELECT d.*, p.nome " +
+                "FROM dettaglioordine d " +
+                "JOIN prodotto p ON d.prodotto_id = p.id " +
+                "WHERE d.ordine_id = ?";
+
+        try (Connection connection = DBConnection.getConnection();
+             PreparedStatement ps = connection.prepareStatement(sql)) {
+
+            ps.setInt(1, ordineId);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    DettaglioOrdine d = new DettaglioOrdine();
+                    d.setOrdineId(rs.getInt("ordine_id"));
+                    d.setProdottoId(rs.getInt("prodotto_id"));
+                    d.setQuantita(rs.getInt("quantita"));
+
+
+                    try {
+                        d.setPrezzoUnitario(rs.getDouble("prezzo_unitario"));
+                    } catch (SQLException e) {
+                        // Fallback se la colonna si chiama diversamente
+                        d.setPrezzoUnitario(rs.getDouble("prezzo_acquisto"));
+                    }
+
+                    d.setIndirizzo(rs.getString("indirizzo"));
+                    d.setCap(rs.getString("cap"));
+
+
+                    d.setNomeProdotto(rs.getString("nome"));
+
+                    dettagli.add(d);
+                }
+            }
+        }
+        return dettagli;
+    }
     // =========================================================
     // DELETE
     // =========================================================
