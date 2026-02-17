@@ -19,7 +19,7 @@
         <p>Seleziona un'operazione per iniziare.</p>
 
         <div class="dashboard-actions">
-            <a href="${pageContext.request.contextPath}/admin/new_product.jsp" class="btn btn-success">
+            <a href="${pageContext.request.contextPath}New_Product" class="btn btn-success">
                 Nuovo Prodotto
             </a>
 

@@ -1,5 +1,4 @@
 package it.unisatcg.model.dao;
-
 import it.unisatcg.model.Categoria;
 
 import java.sql.SQLException;
