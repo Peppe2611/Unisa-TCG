@@ -10,9 +10,11 @@ public class Prodotto {
     private boolean isDisponibile;
     private String specifiche;
     private byte[] foto;
+    private int venditoreId;
     public Prodotto() {}
 
-    public Prodotto(int id, String nome, String descrizione, double prezzo, int quantita, int categoriaId, boolean isDisponibile, String specifiche, byte[] foto) {
+    public Prodotto(int id, String nome, String descrizione, double prezzo, int quantita, int categoriaId, boolean isDisponibile, String specifiche, byte[] foto, int venditoreId
+    ) {
         this.id = id;
         this.nome = nome;
         this.descrizione = descrizione;
@@ -22,6 +24,7 @@ public class Prodotto {
         this.isDisponibile = isDisponibile;
         this.specifiche = specifiche;
         this.foto = foto;
+        this.venditoreId= venditoreId;
     }
 
     public int getId() {
@@ -64,4 +67,6 @@ public class Prodotto {
     public String getSpecifiche(){return this.specifiche;}
     public void setFoto(byte[] foto) {this.foto = foto;}
     public byte[] getFoto() {return this.foto;}
+    public int getVenditoreId() { return venditoreId; }
+    public void setVenditoreId(int venditoreId) { this.venditoreId = venditoreId; }
 }
