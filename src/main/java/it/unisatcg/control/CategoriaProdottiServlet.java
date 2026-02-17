@@ -15,8 +15,8 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @WebServlet("/visualizza-prodotti")
 public class CategoriaProdottiServlet extends HttpServlet {
@@ -26,45 +26,56 @@ public class CategoriaProdottiServlet extends HttpServlet {
         ProdottoDAO prodottoDAO = new ProdottoDAOImp();
         CategoriaDAO categoriaDAO = new CategoriaDAOImp();
 
-        List<Prodotto> products = List.of();
+        List<Prodotto> products;
         List<Categoria> categorie;
 
-        List<String> disponibilita = new ArrayList<>(List.of());
-        disponibilita.add("Tutto");
-        disponibilita.add("Disponibile");
-        disponibilita.add("Esaurito");
-
-        int categoriaSelezionataId = -1;
-        // Recupero parametri
+        // 1. Recupero parametri dalla JSP
         String categoriaIdStr = request.getParameter("categoriaId");
-        String disponibilitasel = request.getParameter("disponibilita");
+        String soloDisponibiliParam = request.getParameter("soloDisponibili");
+        String searchQuery = request.getParameter("search"); // Per mantenere la ricerca se presente
 
-        // Valore di default se il parametro è assente
-        if (disponibilitasel == null || disponibilitasel.isEmpty()) {
-            disponibilitasel = "Tutto";
-        }
+        // Trasformiamo il parametro della checkbox in un booleano
+        boolean escludiEsauriti = "true".equals(soloDisponibiliParam);
+        int categoriaSelezionataId = -1;
 
         try {
             categorie = categoriaDAO.doRetrieveAll();
 
+            // 2. Logica di recupero prodotti (Categoria o Tutti)
             if (categoriaIdStr != null && !categoriaIdStr.trim().isEmpty()) {
-                int categoriaId = Integer.parseInt(categoriaIdStr);
-                products = prodottoDAO.doRetrieveByCategoriaDisp(categoriaId, disponibilitasel);
-                categoriaSelezionataId = categoriaId;
+                categoriaSelezionataId = Integer.parseInt(categoriaIdStr);
+                // Recuperiamo i prodotti della categoria (usiamo "Tutto" per far gestire il filtro dopo alla servlet)
+                products = prodottoDAO.doRetrieveByCategoriaDisp(categoriaSelezionataId, "Tutto");
             } else {
-                // Filtra tutti i prodotti in base alla disponibilità
-                products = prodottoDAO.doRetrieveAllDisp(disponibilitasel);
+                products = prodottoDAO.doRetrieveAllDisp("Tutto");
             }
+
+            // 3. Applicazione del Filtro "Escludi Esauriti" (Logica Java)
+            if (escludiEsauriti) {
+                products = products.stream()
+                        .filter(p -> p.getQuantita() > 0)
+                        .collect(Collectors.toList());
+            }
+
+            // 4. (Opzionale) Ulteriore filtro se c'è una ricerca testuale attiva
+            if (searchQuery != null && !searchQuery.trim().isEmpty()) {
+                String queryLower = searchQuery.toLowerCase();
+                products = products.stream()
+                        .filter(p -> p.getNome().toLowerCase().contains(queryLower))
+                        .collect(Collectors.toList());
+            }
+
         } catch (SQLException | NumberFormatException e) {
             e.printStackTrace();
-            throw new ServletException("Errore database", e);
+            throw new ServletException("Errore nel recupero dei prodotti", e);
         }
 
-        // Passaggio attributi alla JSP
+        // 5. Passaggio attributi alla JSP (nomi coerenti con la nuova JSP)
         request.setAttribute("products", products);
         request.setAttribute("categorie", categorie);
         request.setAttribute("categoriaSelezionata", categoriaSelezionataId);
-        request.setAttribute("disponibilitasel", disponibilitasel); // Essenziale per la JSP
+        request.setAttribute("escludiEsauriti", escludiEsauriti);
+        request.setAttribute("searchQuery", searchQuery);
 
         RequestDispatcher dispatcher = request.getRequestDispatcher("/products.jsp");
         dispatcher.forward(request, response);
